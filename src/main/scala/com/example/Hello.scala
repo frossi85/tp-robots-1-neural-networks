@@ -5,9 +5,9 @@ object Hello {
     val trainCSVFile = getClass.getResource("/train.csv").getPath
     val testCSVFile = getClass.getResource("/test.csv").getPath
     val somNetToTrainFile = "./SOM.nnet"
-    val multilayerPerceptronNetToTrainFile = "./MLP.nnet"
+    val multilayerPerceptronNetToTrainFile = "my_net.nnet"
     val trainedSomFile = "./SOM_trained.nnet"
-    val trainedMultilayerPerceptronFile = "./MPL_trained.nnet"
+    val trainedMultilayerPerceptronFile = "my_net_trained.nnet"
 
     val train = false
     val test = false

@@ -26,7 +26,8 @@ class MultilayerPerceptronImageNeuralNetwork(
 
   if(File(networkFile).isEmpty) {
     logger.info("MultiLayer Perceptron will be created")
-    new MultiLayerPerceptron(inputNeurons, neuronsInHiddenLayers, outputNeurons).save(networkFile)
+    val net = new MultiLayerPerceptron(inputNeurons, neuronsInHiddenLayers, outputNeurons)
+    net.save(networkFile)
     logger.info("MultiLayer Perceptron network was created")
   } else {
     logger.info("MultiLayer Perceptron already exists and will be loaded")

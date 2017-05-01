@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.12.2"
 
-libraryDependencies += "org.beykery" % "neuroph" % "2.92"
+//libraryDependencies += "org.beykery" % "neuroph" % "2.92"
 
 libraryDependencies += "com.github.pathikrit" %% "better-files" % "3.0.0"
 
@@ -20,4 +20,4 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 // Uncomment to use Akka
 //libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.11"
 
-javaOptions in ThisBuild ++= Seq("-Xmx2g")
+unmanagedJars in Compile += file("./libs/neuroph-core-2.93.jar")
