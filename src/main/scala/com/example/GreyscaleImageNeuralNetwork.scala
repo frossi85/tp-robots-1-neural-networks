@@ -1,12 +1,13 @@
 package com.example
 
-/*
 import java.io.{File => JFile}
+
 import com.github.tototoshi.csv.CSVReader
 import com.typesafe.scalalogging.LazyLogging
 import org.neuroph.core.NeuralNetwork
 import org.neuroph.core.data.{DataSet, DataSetRow}
 import org.neuroph.core.events.{LearningEvent, LearningEventListener}
+import org.neuroph.nnet.MultiLayerPerceptron
 import org.neuroph.nnet.learning.BackPropagation
 import scala.collection.JavaConverters._
 
@@ -25,7 +26,7 @@ abstract class GreyscaleImageNeuralNetwork[T <: NeuralNetwork[_]](
   def pixelNormalization(pixelValue: Double): Double =
     pixelValue / maximumPixelValue
 
-  def train(trainCSVFile: String, trainedNetworkFile: String): Unit = {
+  def train(trainCSVFile: String, trainedNetworkFile: String): TrainResult = {
     logger.info("Training started")
 
     val trainingDataSet = getDataSet(trainCSVFile)
@@ -35,9 +36,16 @@ abstract class GreyscaleImageNeuralNetwork[T <: NeuralNetwork[_]](
     neuralNetwork.get.save(trainedNetworkFile)
 
     logger.info("Training finished")
+
+    val totalError = neuralNetwork.get match {
+      case net: MultiLayerPerceptron => Some(net.getLearningRule.getErrorFunction.getTotalError)
+      case _ => None
+    }
+
+    TrainResult(totalError)
   }
 
-  def test(trainCSVFile: String, testCSVFile: String, networkFile: String): List[NetworkTestResult] = {
+  def test(trainCSVFile: String, testCSVFile: String, networkFile: String): TestResult = {
     logger.info("Test started")
 
     val testDataSet = getDataSet(testCSVFile)
@@ -49,15 +57,20 @@ abstract class GreyscaleImageNeuralNetwork[T <: NeuralNetwork[_]](
       neuralNetwork.get.setInput(row.getInput: _*)
       neuralNetwork.get.calculate()
 
-      NetworkTestResult(
+      TestStepResult(
         desiredOutput = getOutputNumber(row.getDesiredOutput().toList),
         actualOutput = getOutputNumber(neuralNetwork.get.getOutput().toList)
       )
     }
 
+    val totalError = neuralNetwork.get match {
+      case net: MultiLayerPerceptron => Some(net.getLearningRule.getErrorFunction.getTotalError)
+      case _ => None
+    }
+
     logger.info("Test finished")
 
-    result.toList
+    TestResult(result.toList)
   }
 
   def generateOutputVector(number: Int): List[Double] = {
@@ -92,16 +105,16 @@ abstract class GreyscaleImageNeuralNetwork[T <: NeuralNetwork[_]](
     values.indexOf(values.max)
   }
 
+  @Override
   override def handleLearningEvent(event: LearningEvent): Unit = {
     val bp = event.getSource().asInstanceOf[BackPropagation]
 
     if (event.getEventType() != LearningEvent.Type.LEARNING_STOPPED){
-      System.out.println(bp.getCurrentIteration() + ". iteration : "+ bp.getTotalNetworkError())
+      logger.info(bp.getCurrentIteration() + ". iteration : "+ bp.getTotalNetworkError())
     }
-    if(bp.getCurrentIteration()>= 100){
+    if(bp.getCurrentIteration()>= 2000){
       println("#### Stopping learning stage")
       neuralNetwork.map(n => n.stopLearning())
     }
   }
 }
-*/
